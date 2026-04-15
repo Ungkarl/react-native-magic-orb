@@ -68,6 +68,7 @@
     "@react-native/eslint-config": "0.85.0",
     "@react-native/jest-preset": "0.85.0",
     "@release-it/conventional-changelog": "^10.0.6",
+    "@shopify/react-native-skia": "^2.6.2",
     "@types/react": "^19.2.0",
     "commitlint": "^20.5.0",
     "del-cli": "^7.0.0",
@@ -81,13 +82,16 @@
     "react": "19.2.0",
     "react-native": "0.83.4",
     "react-native-builder-bob": "^0.41.0",
+    "react-native-reanimated": "4.2.1",
     "release-it": "^19.2.4",
     "turbo": "^2.8.21",
     "typescript": "^6.0.2"
   },
   "peerDependencies": {
+    "@shopify/react-native-skia": "*",
     "react": "*",
-    "react-native": "*"
+    "react-native": "*",
+    "react-native-reanimated": "*"
   },
   "workspaces": [
     "example"
