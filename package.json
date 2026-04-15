@@ -1,6 +1,6 @@
 {
   "name": "react-native-magic-orb",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "A Skia and Reanimated based shader, creating a Apple like Ai Orb/Sphere",
   "main": "./lib/module/index.js",
   "types": "./lib/typescript/src/index.d.ts",
