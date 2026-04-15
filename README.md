@@ -10,13 +10,7 @@ A beautiful, highly-customizable animated orb component for React Native, powere
 
 <br />
 
-<div style="display:flex;gap:12px;align-items:center;justify-content:center;flex-wrap:nowrap">
-  <img src="https://github.com/user-attachments/assets/c2c8b07b-d4f3-41f4-9925-448b14e04f96" alt="Simulator recording 1" style="height:340px;object-fit:cover;border-radius:12px" />
-  <img src="https://github.com/user-attachments/assets/07f09daa-bad0-4bf1-95b7-b6866461ec27" alt="Simulator recording 2" style="height:340px;object-fit:cover;border-radius:12px" />
-  <img src="https://github.com/user-attachments/assets/fc3479d1-bb99-4d1e-9764-6dd1bbf75c80" alt="Simulator recording 3" style="height:340px;object-fit:cover;border-radius:12px" />
-  <img src="https://github.com/user-attachments/assets/cf82413b-9901-45df-90af-1b45e070c77b" alt="Simulator recording 4" style="height:340px;object-fit:cover;border-radius:12px" />
-  <img src="https://github.com/user-attachments/assets/812e8cbb-9469-4854-8752-6175b993cd73" alt="Simulator recording 5" style="height:340px;object-fit:cover;border-radius:12px" />
-</div>
+<img src="https://github.com/user-attachments/assets/e7c1fb79-d663-4b1b-abab-6d2a0b11fa61" height="450" alt="react-native-magic-orb animation preview" />
 
 </div>
 
