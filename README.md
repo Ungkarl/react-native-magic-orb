@@ -14,9 +14,11 @@ A beautiful, highly-customizable animated orb component for React Native, powere
 
 </div>
 
-<br />
+<br /> 
 
 
+## 🤔 Why I made it
+I created `react-native-magic-orb`, as i needed a living visual indicator for an Ai assistant in a project at work. I found already made ones, that were either not living up to my requirements or behind a paywall. So i decided to make my own, and share it with everyone who might need something like it. Inspiration was drawn from the Apple Intelligence Orb. 
 
 
 ## 💡 Use Cases
@@ -24,7 +26,7 @@ A beautiful, highly-customizable animated orb component for React Native, powere
 - AI and voice assistant interfaces that need a living, breathing visual indicator
 - Meditation and mindfulness apps requiring a calm, fluid focal point
 - Loading and processing states where a static spinner is not engaging enough
-- Music players and audio visualizers that want to react to sound or rhythm
+
 
 ## 📦 Prerequisites
 
@@ -91,6 +93,23 @@ import { Orb } from 'react-native-magic-orb';
 | `ocean` | Navy to bright blue — deep water |
 | `nebula` | Near-black indigo to bright purple — outer space |
 | `toxic` | Neon green to acid yellow — radioactive glow |
+
+
+## 🛣️ Roadmap
+- [x] Initial release with core animation and customization features
+- [ ] Additional preset color schemes
+- [ ] Auto Color Generation based on a single input color
+- [ ] Dynamic Color Mode that shifts hues over time
+- [ ] A fix for the shape breaking when some of the props are set to high values
+- [ ] Performance optimizations for lower-end devices
+- [ ] Support for React Native Web
+- [ ] Touch Interaction mode - make the orb react to being tapped (e.g. ripple effect through shader)
+- [ ] Gyroscope Mode - shift lighting or perspective of the orb based on the devices tilt and orientation
+- [ ] Custom Lighting Props - expose controls for lighting intensity, attenuation, and color to allow for more dramatic or subtle shading effects
+- [ ] Audio Reactive Mode - make the orb pulse and morph in response to ambient sound or music using the device microphone input
+
+
+
 
 ## 🤝 Contributing
 
