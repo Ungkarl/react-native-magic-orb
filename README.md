@@ -7,7 +7,7 @@ A beautiful, animated orb/sphere component for React Native — powered by Skia 
 
 <br />
 
-p align="center">
+<p align="center">
   <img src="https://github.com/user-attachments/assets/e7c1fb79-d663-4b1b-abab-6d2a0b11fa61" height="250" alt="react-native-magic-orb animation preview" />
 </p>
 
