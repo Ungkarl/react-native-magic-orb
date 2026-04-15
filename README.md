@@ -1,13 +1,19 @@
-
-
-
-
 # react-native-magic-orb
 
 A beautiful, animated orb/sphere component for React Native — powered by Skia shaders and Reanimated. Inspired by the Apple Intelligence orb animation.
 
+<br />
 
-<video src="[https://github.com/user-attachments/assets/xyz-123.mp4](https://github.com/user-attachments/assets/f002c913-6f81-4b97-86a7-ff52e2ad44f9)" autoplay loop muted playsinline width="300"></video>
+<p align="center">
+  <video src="https://github.com/user-attachments/assets/e9e83b9-c46a-4e07-8574-a8a0e5d18c9b.mp4" width="350" autoplay loop muted playsinline></video>
+</p>
+
+<br />
+
+
+
+
+
 
 
 ## Prerequisites
