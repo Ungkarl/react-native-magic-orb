@@ -60,7 +60,7 @@ const skslSource = `
 
     v0 *= smoothstep(r0 * 1.05, r0, len);
     float innerFade = smoothstep(r0 * 0.8, r0 * 0.95, len);
-    v0 *= mix(innerFade, 1.0, 0.7);
+    v0 *= mix(innerFade, 1.0, 0.3); 
 
     float cl = cos(ang + iTime * 2.0) * 0.5 + 0.5;
     float a = iTime * -1.0;
@@ -78,9 +78,10 @@ const skslSource = `
     lightCol = mix(vec3(0.0), lightCol, v0);
     lightCol = clamp(lightCol, 0.0, 1.0);
 
-    float alpha = max(max(lightCol.r, lightCol.g), lightCol.b);
-    
-    return vec4(lightCol, alpha);
+    float centerMask = smoothstep(0.0, innerRadius * 0.85, len);
+lightCol *= centerMask;
+float alpha = max(max(lightCol.r, lightCol.g), lightCol.b);
+return vec4(lightCol, alpha);
   }
 `;
 
