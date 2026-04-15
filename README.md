@@ -97,10 +97,12 @@ import { Orb } from 'react-native-magic-orb';
 
 ## 🛣️ Roadmap
 - [x] Initial release with core animation and customization features
-- [ ] Additional preset color schemes
+- [x] Additional preset color schemes
+- [ ] Support for up to 5 colors and down to 2 colors for more variety
 - [ ] Auto Color Generation based on a single input color
 - [ ] Dynamic Color Mode that shifts hues over time
 - [ ] A fix for the shape breaking when some of the props are set to high values
+- [ ] Make color glow / gradient more dynamic than just a animating circle.
 - [ ] Performance optimizations for lower-end devices
 - [ ] Support for React Native Web
 - [ ] Touch Interaction mode - make the orb react to being tapped (e.g. ripple effect through shader)
