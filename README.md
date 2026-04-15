@@ -7,11 +7,11 @@ A beautiful, animated orb/sphere component for React Native — powered by Skia 
 
 <br />
 
-<p align="center">
-  <video src="
-https://github.com/user-attachments/assets/c49a92dd-7acc-4629-97fd-c36779100486
-" width="350" autoplay loop muted playsinline></video>
-</p>
+
+
+https://github.com/user-attachments/assets/ae25a2ed-0f61-4373-bbcb-5c3ddecc4c92
+
+
 
 <br />
 
