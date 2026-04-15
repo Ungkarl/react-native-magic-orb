@@ -1,11 +1,16 @@
 # react-native-magic-orb
+[![npm version](https://img.shields.io/npm/v/react-native-magic-orb.svg?style=flat-square)](https://www.npmjs.com/package/react-native-magic-orb)
+[![npm downloads](https://img.shields.io/npm/dm/react-native-magic-orb.svg?style=flat-square)](https://www.npmjs.com/package/react-native-magic-orb)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](https://opensource.org/licenses/MIT)
 
 A beautiful, animated orb/sphere component for React Native — powered by Skia shaders and Reanimated. Inspired by the Apple Intelligence orb animation.
 
 <br />
 
 <p align="center">
-  <video src="https://github.com/user-attachments/assets/e9e83b9-c46a-4e07-8574-a8a0e5d18c9b.mp4" width="350" autoplay loop muted playsinline></video>
+  <video src="
+https://github.com/user-attachments/assets/c49a92dd-7acc-4629-97fd-c36779100486
+" width="350" autoplay loop muted playsinline></video>
 </p>
 
 <br />
