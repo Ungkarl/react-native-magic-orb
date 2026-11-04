@@ -143,11 +143,11 @@ Colors are spread across neighbouring hues with a gentle lightness ramp, calcula
 | `size` | `number` | `300` | Width and height of the orb in logical pixels. |
 | `speed` | `number` | `1.0` | Global time multiplier. Scales the rate of all animations uniformly. |
 | `wobbleSpeed` | `number` | `0.5` | How quickly the surface noise pattern evolves over time. Higher values produce faster, more restless movement. |
-| `intensity` | `number` | `0.4` | Amplitude of the shape distortion. Controls how aggressively the orb edge stretches and bubbles outward — higher values produce more dramatic morphing. Using a high value will make the shape break. |
-| `noiseScale` | `number` | `0.85` | Spatial frequency of the surface noise. Lower values produce large, smooth blobs; higher values produce finer, more complex surface detail. |
-| `innerRadius` | `number` | `0.6` | Radius of the dark inner core as a fraction of the orb size (0–1). Larger values shrink the luminous shell toward the edge. |
+| `intensity` | `number` | `0.4` | Amplitude of the shape distortion. Controls how aggressively the orb edge stretches and bubbles outward — higher values produce more dramatic morphing. `Orb` clamps it to `0`–`1` so the shape always stays intact; `ClassicOrb` does not clamp, and very high values can break its shape. |
+| `noiseScale` | `number` | `0.85` | Spatial frequency of the surface noise. Lower values produce large, smooth blobs; higher values produce finer, more complex surface detail. `Orb` clamps it to `0`–`3`. |
+| `innerRadius` | `number` | `0.6` | Radius of the dark inner core as a fraction of the orb size (0–1). Larger values shrink the luminous shell toward the edge. `Orb` clamps it to `0.05`–`0.95`. |
 | `glow` | `boolean` | `true` | Renders a soft, animated glow around the orb's rim. Set to `false` to turn it off. `Orb` only. |
-| `glowIntensity` | `number` | `0.7` | Strength of the glow. `0` hides it; values up to about `2` give a stronger halo. Ignored when `glow` is `false`. `Orb` only. |
+| `glowIntensity` | `number` | `0.7` | Strength of the glow, `0`–`2`. `0` hides it; higher values give a stronger halo. Ignored when `glow` is `false`. `Orb` only. |
 | `style` | `ViewStyle` | — | Additional styles applied to the outer container `View`. |
 
 ## 🎨 Color Schemes
@@ -177,7 +177,7 @@ Colors are spread across neighbouring hues with a gentle lightness ramp, calcula
 - [x] Support for up to 5 colors and down to 2 colors for more variety
 - [x] Auto Color Generation based on a single input color
 - [x] Dynamic Color Mode that shifts hues over time
-- [ ] A fix for the shape breaking when some of the props are set to high values
+- [x] A fix for the shape breaking when some of the props are set to high values
 - [x] Make color glow / gradient more dynamic than just a animating circle.
 - [ ] Performance optimizations for lower-end devices
 - [ ] Support for React Native Web

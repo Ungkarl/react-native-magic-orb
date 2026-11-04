@@ -38,6 +38,9 @@ export default function App() {
       <Demo label="hueShift={30}">
         <Orb colorScheme="aurora" hueShift={30} size={SIZE} />
       </Demo>
+      <Demo label="intensity={5} noiseScale={9}">
+        <Orb colorScheme="synthwave" intensity={5} noiseScale={9} size={SIZE} />
+      </Demo>
       <Demo label="ClassicOrb">
         <ClassicOrb colors={['#00F5FF', '#9D00FF', '#FF00C8']} size={SIZE} />
       </Demo>
