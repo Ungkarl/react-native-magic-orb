@@ -6,3 +6,4 @@ export type { BaseOrbProps } from './OrbBase';
 export type { ColorSchemeName } from './colors';
 export { generatePalette } from './palette';
 export type { OrbColors } from './palette';
+export { ORB_LIMITS } from './Orb';
