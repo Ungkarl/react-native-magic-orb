@@ -11,6 +11,19 @@ export const orbSksl = `${commonSksl}
     return min(x, k) + 0.2 * (vec3(1.0) - exp(-max(x - k, 0.0) * 5.0));
   }
 
+  // Distance between two positions on the ring, in turns (0..0.5).
+  float ringDist(float a, float b) {
+    return abs(fract(a - b + 0.5) - 0.5);
+  }
+
+  vec3 paletteColor(int i) {
+    if (i == 0) return color1;
+    if (i == 1) return color2;
+    if (i == 2) return color3;
+    if (i == 3) return color4;
+    return color5;
+  }
+
   // ~1/255 of noise per pixel to break up banding in the soft gradients.
   float dither(vec2 p) {
     return (fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453) - 0.5) / 255.0;
@@ -61,28 +74,40 @@ export const orbSksl = `${commonSksl}
     float v2 = smoothstep(1.0, mix(innerRadius, 1.0, n0 * 0.5), len);
     float v3 = smoothstep(innerRadius, mix(innerRadius, 1.0, 0.5), len);
 
-    // Living colors: one smooth cosine bump per color around the ring. Each color peaks at
-    // its center and fades to zero exactly opposite it, so where two colors meet only those
-    // two blend (no third-color streaks, no creases). Centers shift so each color's share
-    // breathes around a third. Noise bends the layout locally, so there is no rigid
-    // rotation, only a slow sway.
+    // Living colors: one smooth cosine bump per color (2–5) spaced around the ring. Each
+    // bump reaches zero 1.5 spacings from its center, so where two colors meet only those
+    // two blend (no streaks of a third color, no creases). Shares breathe by ±10% of their
+    // size. The colors travel around the ring like the highlights do: about one lap per
+    // 15–20 s on average, speeding up, slowing down and now and then reversing (velocity
+    // swings between roughly -0.12 and +0.24 turns/s). Noise bends the layout locally on top.
     vec2 cdir = uv * invLen;
-    float sway = 0.07 * sin(iTime * 0.11) + 0.04 * sin(iTime * 0.23 + 1.0);
-    // Kept gentle and low-frequency so the layout never folds back on itself (a fold
-    // squeezes a gradient into a hard edge).
-    float warp = 0.06 * snoise3(vec3(cdir * 0.7, iTime * 0.15 + 20.0));
-    float u = (ang / 6.2831853 + sway + warp) * 6.2831853;
+    float travel = 0.06 * iTime + 0.25 * sin(iTime * 0.37) + 0.12 * sin(iTime * 0.71 + 1.0);
+    // Kept gentle and low-frequency in space so the layout never folds back on itself
+    // (a fold squeezes a gradient into a hard edge).
+    float warp = 0.06 * snoise3(vec3(cdir * 0.7, iTime * 0.3 + 20.0));
+    float u = ang / 6.2831853 + travel + warp;
+    float n = clamp(floor(colorCount + 0.5), 2.0, 5.0);
+    float spacing = 1.0 / n;
+    float shareSwing = 0.1 * spacing;
     float wp = iTime * 0.17;
-    float w1 = 0.33333 + 0.0333 * sin(wp);
-    float w2 = 0.33333 + 0.0333 * sin(wp + 2.0944);
-    float c2 = (w1 * 0.5 + w2 * 0.5) * 6.2831853;
-    float c3 = (w1 + w2 * 0.5 + (1.0 - w1 - w2) * 0.5) * 6.2831853;
     float sharp = mix(1.6, 2.4, 0.5 + 0.5 * sin(iTime * 0.27 + 0.6));
-    // max() guards pow(): rounding can push the base a hair below 0, which is NaN on GPUs.
-    float k1 = pow(max(0.5 + 0.5 * cos(u), 0.0), sharp);
-    float k2 = pow(max(0.5 + 0.5 * cos(u - c2), 0.0), sharp);
-    float k3 = pow(max(0.5 + 0.5 * cos(u - c3), 0.0), sharp);
-    vec3 colBase = (color1 * k1 + color2 * k2 + color3 * k3) / max(k1 + k2 + k3, 0.0001);
+    vec3 colSum = vec3(0.0);
+    float kSum = 0.0;
+    // Color 1 is centered at 0, each next color starts where the previous share ends.
+    float start = -0.5 * (spacing + shareSwing * sin(wp));
+    for (int i = 0; i < 5; i++) {
+      float fi = float(i);
+      if (fi < n) {
+        float share = spacing + shareSwing * sin(wp + fi * 6.2831853 / n);
+        float d = ringDist(u, start + share * 0.5);
+        // max() guards pow(): rounding can push the base a hair below 0, which is NaN on GPUs.
+        float k = pow(max(0.5 + 0.5 * cos(3.14159265 * min(d / (1.5 * spacing), 1.0)), 0.0), sharp);
+        colSum += paletteColor(i) * k;
+        kSum += k;
+        start += share;
+      }
+    }
+    vec3 colBase = colSum / max(kSum, 0.0001);
 
     vec3 lightCol = (colBase + v1) * mix(1.0, v2 * v3, 0.1);
     lightCol = mix(vec3(0.0), lightCol, v0);
