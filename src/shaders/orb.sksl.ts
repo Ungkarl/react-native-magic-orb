@@ -81,37 +81,41 @@ export const orbSksl = `${commonSksl}
     float v2 = smoothstep(1.0, mix(innerRadius, 1.0, n0 * 0.5), len);
     float v3 = smoothstep(innerRadius, mix(innerRadius, 1.0, 0.5), len);
 
-    // Living colors: one smooth cosine bump per color (2–5) spaced around the ring. Each
-    // bump reaches zero 1.5 spacings from its center, so where two colors meet only those
-    // two blend (no streaks of a third color, no creases). Shares breathe by ±10% of their
-    // size. The colors travel around the ring like the highlights do: about one lap per
-    // 15–20 s on average, speeding up, slowing down and now and then reversing (velocity
-    // swings between roughly -0.12 and +0.24 turns/s). Noise bends the layout locally on top.
+    // Living colors: every color (2–5) is its own blob on the ring with its own life.
+    // Each travels at its own speed and direction (neighbours move opposite ways, so blobs
+    // pass through each other and mix where they overlap), wanders, and grows and shrinks.
+    // Weights are normalised soft-core falloffs, so blending is smooth everywhere:
+    // no seams or creases, even while blobs cross or drift far apart. Slow spatial noise bends the layout on top.
     vec2 cdir = uv * invLen;
-    float travel = 0.06 * iTime + 0.25 * sin(iTime * 0.37) + 0.12 * sin(iTime * 0.71 + 1.0);
     // Kept gentle and low-frequency in space so the layout never folds back on itself
     // (a fold squeezes a gradient into a hard edge).
-    float warp = 0.06 * snoise3(vec3(cdir * 0.7, iTime * 0.3 + 20.0));
-    float u = ang / 6.2831853 + travel + warp;
+    float warp = 0.05 * snoise3(vec3(cdir * 0.7, iTime * 0.2 + 20.0));
+    float u = ang / 6.2831853 + warp;
     float n = clamp(floor(colorCount + 0.5), 2.0, 5.0);
     float spacing = 1.0 / n;
-    float shareSwing = 0.1 * spacing;
-    float wp = iTime * 0.17;
-    float sharp = mix(1.6, 2.4, 0.5 + 0.5 * sin(iTime * 0.27 + 0.6));
     vec3 colSum = vec3(0.0);
     float kSum = 0.0;
-    // Color 1 is centered at 0, each next color starts where the previous share ends.
-    float start = -0.5 * (spacing + shareSwing * sin(wp));
     for (int i = 0; i < 5; i++) {
       float fi = float(i);
       if (fi < n) {
-        float share = spacing + shareSwing * sin(wp + fi * 6.2831853 / n);
-        float d = ringDist(u, start + share * 0.5);
-        // max() guards pow(): rounding can push the base a hair below 0, which is NaN on GPUs.
-        float k = pow(max(0.5 + 0.5 * cos(3.14159265 * min(d / (1.5 * spacing), 1.0)), 0.0), sharp);
+        // Alternate directions; every color gets a different speed (0.03–0.06 turns/s).
+        float dir = mod(fi, 2.0) < 0.5 ? 1.0 : -1.0;
+        float speed = 0.03 + 0.0075 * fi;
+        float center = fi * spacing
+          + dir * speed * iTime
+          + 0.06 * sin(iTime * (0.19 + 0.05 * fi) + fi * 2.1);
+        // Size: how strongly this color claims the ring around it (grows and shrinks).
+        float size = max(spacing, 0.25) * (0.7 + 0.2 * sin(iTime * (0.27 + 0.04 * fi) + fi * 1.3));
+        float d = ringDist(u, center);
+        // Soft core about "size" wide with a long, gentle tail (falls off like 1/d^4).
+        // The core lets nearby blobs merge smoothly; the tail keeps every color's influence
+        // comparable across gaps, so colors melt over the whole distance between blobs.
+        // (A Gaussian falls off so fast that in a gap both weights vanish and the blend
+        // snaps into a hard edge.)
+        float q = 1.0 + (d * d) / (size * size);
+        float k = 1.0 / (q * q);
         colSum += paletteColor(i) * k;
         kSum += k;
-        start += share;
       }
     }
     vec3 colBase = colSum / max(kSum, 0.0001);
