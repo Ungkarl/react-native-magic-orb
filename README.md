@@ -64,8 +64,22 @@ import { Orb } from 'react-native-magic-orb';
   intensity={0.65}
   noiseScale={1.1}
   innerRadius={0.45}
+  glowIntensity={1.4}
   style={{ marginTop: 32 }}
 />
+```
+
+### Components
+
+| Component | Look |
+|-----------|------|
+| `Orb` | A glowing ring whose three colors melt into each other, with two wandering highlights and an animated outer glow. |
+| `ClassicOrb` | The original orb from versions before 0.2.0: a two-color ring with a single orbiting highlight. Same props as `Orb`, minus `glow` and `glowIntensity`. |
+
+```tsx
+import { ClassicOrb } from 'react-native-magic-orb';
+
+<ClassicOrb colorScheme="aurora" />
 ```
 
 ## ⚙️ Props
@@ -73,13 +87,15 @@ import { Orb } from 'react-native-magic-orb';
 | Prop | Type | Default | Description |
 |------|------|---------|-------------|
 | `colorScheme` | `ColorSchemeName` | — | Preset color palette. When set, overrides the `colors` prop. |
-| `colors` | `[string, string, string]` | `['#339999', '#194c4c', '#7df7ff']` | Tuple of three hex color strings used to paint the orb surface. |
+| `colors` | `[string, string, string]` | `['#339999', '#194c4c', '#7df7ff']` | Tuple of three hex color strings used to paint the orb surface. `Orb` uses all three; `ClassicOrb` uses the first two. |
 | `size` | `number` | `300` | Width and height of the orb in logical pixels. |
 | `speed` | `number` | `1.0` | Global time multiplier. Scales the rate of all animations uniformly. |
 | `wobbleSpeed` | `number` | `0.5` | How quickly the surface noise pattern evolves over time. Higher values produce faster, more restless movement. |
 | `intensity` | `number` | `0.4` | Amplitude of the shape distortion. Controls how aggressively the orb edge stretches and bubbles outward — higher values produce more dramatic morphing. Using a high value will make the shape break. |
 | `noiseScale` | `number` | `0.85` | Spatial frequency of the surface noise. Lower values produce large, smooth blobs; higher values produce finer, more complex surface detail. |
 | `innerRadius` | `number` | `0.6` | Radius of the dark inner core as a fraction of the orb size (0–1). Larger values shrink the luminous shell toward the edge. |
+| `glow` | `boolean` | `true` | Renders a soft, animated glow around the orb's rim. Set to `false` to turn it off. `Orb` only. |
+| `glowIntensity` | `number` | `0.7` | Strength of the glow. `0` hides it; values up to about `2` give a stronger halo. Ignored when `glow` is `false`. `Orb` only. |
 | `style` | `ViewStyle` | — | Additional styles applied to the outer container `View`. |
 
 ## 🎨 Color Schemes
