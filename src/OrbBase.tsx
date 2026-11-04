@@ -4,7 +4,9 @@ import type { SkRuntimeEffect } from '@shopify/react-native-skia';
 import type { ColorSchemeName } from './colors';
 import { resolveColors } from './palette';
 import type { OrbColors } from './palette';
+import { useReducedMotion } from 'react-native-reanimated';
 import { useOrbAnimation } from './useOrbAnimation';
+import { useAppActive } from './useAppActive';
 import { OrbCanvas } from './OrbCanvas';
 
 /** Props shared by every orb component. */
@@ -29,9 +31,26 @@ export interface BaseOrbProps {
   noiseScale?: number;
   /** Radius of the dark inner core as a fraction of the orb size (0–1). */
   innerRadius?: number;
+  /**
+   * Freezes the animation on its current frame. While paused (and while the app is in
+   * the background) nothing is computed or redrawn. Default `false`.
+   */
+  paused?: boolean;
+  /**
+   * How to respond to the system "Reduce Motion" setting. `'system'` (default) plays the
+   * animation at a quarter speed when it is on; `'always'` always does; `'never'` ignores it.
+   */
+  reduceMotion?: 'system' | 'always' | 'never';
+  /** Read by screen readers. When set, the orb is exposed as an image with this label. */
+  accessibilityLabel?: string;
+  /** Used to find the orb in end-to-end tests. */
+  testID?: string;
   /** Additional styles for the outer container. */
   style?: ViewStyle;
 }
+
+/** Animation speed multiplier while motion is reduced. */
+const REDUCED_MOTION_SPEED = 0.25;
 
 interface OrbBaseProps extends BaseOrbProps {
   shader: SkRuntimeEffect | null;
@@ -52,11 +71,21 @@ export function OrbBase({
   intensity = 0.4,
   noiseScale = 0.85,
   innerRadius = 0.6,
+  paused = false,
+  reduceMotion = 'system',
+  accessibilityLabel,
+  testID,
   style,
 }: OrbBaseProps) {
+  const appActive = useAppActive();
+  const systemReducedMotion = useReducedMotion();
+  const reduced =
+    reduceMotion === 'always' ||
+    (reduceMotion === 'system' && systemReducedMotion);
+
   const uniforms = useOrbAnimation({
     size,
-    speed,
+    speed: reduced ? speed * REDUCED_MOTION_SPEED : speed,
     wobbleSpeed,
     intensity,
     noiseScale,
@@ -64,10 +93,17 @@ export function OrbBase({
     glowIntensity,
     colors: resolveColors({ colorScheme, colors, color }),
     hueShift,
+    running: appActive && !paused,
   });
 
   return (
-    <View style={[styles.container, { width: size, height: size }, style]}>
+    <View
+      style={[styles.container, { width: size, height: size }, style]}
+      testID={testID}
+      accessible={accessibilityLabel !== undefined}
+      accessibilityRole={accessibilityLabel !== undefined ? 'image' : undefined}
+      accessibilityLabel={accessibilityLabel}
+    >
       <OrbCanvas size={size} uniforms={uniforms} shader={shader} />
     </View>
   );

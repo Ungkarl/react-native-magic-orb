@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import {
   useSharedValue,
   useFrameCallback,
@@ -21,6 +21,8 @@ interface OrbAnimationOptions {
   colors: string[];
   /** Hue rotation in degrees per second (0 = off). */
   hueShift: number;
+  /** When false, the frame loop stops: no per-frame work and no redraws. */
+  running: boolean;
 }
 
 export function useOrbAnimation({
@@ -33,14 +35,22 @@ export function useOrbAnimation({
   glowIntensity,
   colors,
   hueShift,
+  running,
 }: OrbAnimationOptions) {
   const time = useSharedValue(0);
 
-  useFrameCallback((frameInfo: FrameInfo) => {
+  const frameCallback = useFrameCallback((frameInfo: FrameInfo) => {
     if (frameInfo.timeSincePreviousFrame !== null) {
-      time.value += frameInfo.timeSincePreviousFrame * 0.001 * speed;
+      // Cap the step so resuming after a pause never makes the animation jump.
+      const dt = Math.min(frameInfo.timeSincePreviousFrame, 100);
+      time.value += dt * 0.001 * speed;
     }
-  });
+  }, running);
+
+  // Start/stop Reanimated's frame loop (an external system) to match `running`.
+  useEffect(() => {
+    frameCallback.setActive(running);
+  }, [frameCallback, running]);
 
   // Parse once per palette (inline arrays are new every render, so key by content).
   const colorsKey = colors.join(',');
