@@ -1,5 +1,18 @@
 # Changelog
 
+# [0.4.0](https://github.com/Ungkarl/react-native-magic-orb/compare/v0.3.0...v0.4.0) (2026-11-04)
+
+
+### Bug Fixes
+
+* give each color in Orb its own life ([#8](https://github.com/Ungkarl/react-native-magic-orb/issues/8)) ([621b471](https://github.com/Ungkarl/react-native-magic-orb/commit/621b4711251fbaa286e60fc27679780b3b4d0ea8))
+* keep Orb's ring intact at any prop values ([#7](https://github.com/Ungkarl/react-native-magic-orb/issues/7)) ([1bca5f8](https://github.com/Ungkarl/react-native-magic-orb/commit/1bca5f8874c31ab6e20b884db55256abe426c869))
+
+
+### Features
+
+* pause, Reduce Motion, accessibility, and lazy shaders ([#9](https://github.com/Ungkarl/react-native-magic-orb/issues/9)) ([b91cd20](https://github.com/Ungkarl/react-native-magic-orb/commit/b91cd205d7d0dbf6c7fc32f90b7a84daa3dd2623))
+
 # [0.3.0](https://github.com/Ungkarl/react-native-magic-orb/compare/v0.2.0...v0.3.0) (2026-11-04)
 
 
