@@ -78,9 +78,6 @@
     "url": "https://github.com/Ungkarl/react-native-magic-orb/issues"
   },
   "homepage": "https://github.com/Ungkarl/react-native-magic-orb#readme",
-  "publishConfig": {
-    "registry": "https://registry.npmjs.org/"
-  },
   "devDependencies": {
     "@commitlint/config-conventional": "^20.5.0",
     "@eslint/compat": "^2.0.3",
