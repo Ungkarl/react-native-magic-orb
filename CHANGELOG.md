@@ -1,5 +1,12 @@
 # Changelog
 
+# [0.3.0](https://github.com/Ungkarl/react-native-magic-orb/compare/v0.2.0...v0.3.0) (2026-11-04)
+
+
+### Features
+
+* 2-5 colors, palette from one color, and hue shifting ([#5](https://github.com/Ungkarl/react-native-magic-orb/issues/5)) ([14f8534](https://github.com/Ungkarl/react-native-magic-orb/commit/14f853480bbb2837a73da9015ea8333a1106e754))
+
 # [0.2.0](https://github.com/Ungkarl/react-native-magic-orb/compare/v0.1.8...v0.2.0) (2026-11-04)
 
 ### Features
