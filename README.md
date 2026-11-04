@@ -64,6 +64,7 @@ import { Orb } from 'react-native-magic-orb';
   intensity={0.65}
   noiseScale={1.1}
   innerRadius={0.45}
+  glowIntensity={1.4}
   style={{ marginTop: 32 }}
 />
 ```
@@ -80,6 +81,8 @@ import { Orb } from 'react-native-magic-orb';
 | `intensity` | `number` | `0.4` | Amplitude of the shape distortion. Controls how aggressively the orb edge stretches and bubbles outward — higher values produce more dramatic morphing. Using a high value will make the shape break. |
 | `noiseScale` | `number` | `0.85` | Spatial frequency of the surface noise. Lower values produce large, smooth blobs; higher values produce finer, more complex surface detail. |
 | `innerRadius` | `number` | `0.6` | Radius of the dark inner core as a fraction of the orb size (0–1). Larger values shrink the luminous shell toward the edge. |
+| `glow` | `boolean` | `true` | Renders a soft, animated glow around the orb's rim. Set to `false` to turn it off. |
+| `glowIntensity` | `number` | `1.0` | Strength of the glow. `0` hides it; values up to about `2` give a stronger halo. Ignored when `glow` is `false`. |
 | `style` | `ViewStyle` | — | Additional styles applied to the outer container `View`. |
 
 ## 🎨 Color Schemes

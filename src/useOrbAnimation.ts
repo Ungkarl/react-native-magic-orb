@@ -13,6 +13,7 @@ interface OrbAnimationOptions {
   intensity: number;
   noiseScale: number;
   innerRadius: number;
+  glowIntensity: number;
   parsedColors: {
     c1: [number, number, number];
     c2: [number, number, number];
@@ -27,6 +28,7 @@ export function useOrbAnimation({
   intensity,
   noiseScale,
   innerRadius,
+  glowIntensity,
   parsedColors,
 }: OrbAnimationOptions) {
   const time = useSharedValue(0);
@@ -48,6 +50,7 @@ export function useOrbAnimation({
       innerRadius,
       intensity,
       noiseSpeed: wobbleSpeed,
+      glowIntensity,
     };
   });
 
