@@ -148,7 +148,21 @@ Colors are spread across neighbouring hues with a gentle lightness ramp, calcula
 | `innerRadius` | `number` | `0.6` | Radius of the dark inner core as a fraction of the orb size (0–1). Larger values shrink the luminous shell toward the edge. `Orb` clamps it to `0.05`–`0.95`. |
 | `glow` | `boolean` | `true` | Renders a soft, animated glow around the orb's rim. Set to `false` to turn it off. `Orb` only. |
 | `glowIntensity` | `number` | `0.7` | Strength of the glow, `0`–`2`. `0` hides it; higher values give a stronger halo. Ignored when `glow` is `false`. `Orb` only. |
+| `paused` | `boolean` | `false` | Freezes the animation on its current frame. While paused, nothing is computed or redrawn. |
+| `reduceMotion` | `'system' \| 'always' \| 'never'` | `'system'` | How to respond to the system Reduce Motion setting. `'system'` plays the animation at a quarter speed when it is on; `'always'` always does; `'never'` ignores the setting. |
+| `accessibilityLabel` | `string` | — | Read by screen readers. When set, the orb is exposed as an image with this label. |
+| `testID` | `string` | — | Used to find the orb in end-to-end tests. |
 | `style` | `ViewStyle` | — | Additional styles applied to the outer container `View`. |
+
+### Performance and accessibility
+
+- The animation pauses automatically while the app is in the background, so a hidden orb uses no CPU or GPU. Pass `paused` to stop it yourself, for example when the orb scrolls out of view.
+- Each orb's shader is compiled the first time that orb renders, so orbs you never use cost nothing at startup.
+- With the system Reduce Motion setting on, orbs animate at a quarter speed by default (see `reduceMotion`).
+
+```tsx
+<Orb paused={!isListening} accessibilityLabel="Assistant is listening" />
+```
 
 ## 🎨 Color Schemes
 

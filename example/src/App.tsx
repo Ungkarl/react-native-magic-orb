@@ -1,4 +1,5 @@
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useState } from 'react';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { ClassicOrb, Orb } from 'react-native-magic-orb';
 import type { ReactNode } from 'react';
 
@@ -14,12 +15,27 @@ function Demo({ label, children }: { label: string; children: ReactNode }) {
 }
 
 export default function App() {
+  const [paused, setPaused] = useState(false);
+
   return (
     <ScrollView
       style={styles.screen}
       contentContainerStyle={styles.grid}
       contentInsetAdjustmentBehavior="automatic"
     >
+      <Demo label={paused ? 'paused (tap to play)' : 'tap to pause'}>
+        <Pressable
+          onPress={() => setPaused((p) => !p)}
+          accessibilityRole="button"
+        >
+          <Orb
+            colorScheme="cyberpunk"
+            paused={paused}
+            accessibilityLabel="Demo orb"
+            size={SIZE}
+          />
+        </Pressable>
+      </Demo>
       <Demo label="3 colors">
         <Orb colors={['#00F5FF', '#9D00FF', '#FF00C8']} size={SIZE} />
       </Demo>
