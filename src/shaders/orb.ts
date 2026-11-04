@@ -1,45 +1,10 @@
 import { Skia } from '@shopify/react-native-skia';
+import { commonSksl } from './common';
 
-const skslSource = `
-  uniform float iTime;
-  uniform vec2 iResolution;
-  uniform vec3 color1;
-  uniform vec3 color2;
-  uniform vec3 color3;
-  uniform float noiseScale;
-  uniform float innerRadius;
-  uniform float intensity;
-  uniform float noiseSpeed;
+// <Orb />: the ring with living colors, two wandering highlights, an animated glow,
+// soft highlight roll-off and dithering.
+const source = `${commonSksl}
   uniform float glowIntensity;
-
-  vec3 hash33(vec3 p3) {
-    p3 = fract(p3 * vec3(0.1031, 0.11369, 0.13787));
-    p3 += dot(p3, p3.yxz + 19.19);
-    return -1.0 + 2.0 * fract(vec3(p3.x + p3.y, p3.x + p3.z, p3.y + p3.z) * p3.zyx);
-  }
-
-  float snoise3(vec3 p) {
-    const float K1 = 0.333333333;
-    const float K2 = 0.166666667;
-    vec3 i = floor(p + (p.x + p.y + p.z) * K1);
-    vec3 d0 = p - (i - (i.x + i.y + i.z) * K2);
-    vec3 e = step(vec3(0.0), d0 - d0.yzx);
-    vec3 i1 = e * (1.0 - e.zxy);
-    vec3 i2 = 1.0 - e.zxy * (1.0 - e);
-    vec3 d1 = d0 - (i1 - K2);
-    vec3 d2 = d0 - (i2 - K1);
-    vec3 d3 = d0 - 0.5;
-    vec4 h = max(0.6 - vec4(dot(d0, d0), dot(d1, d1), dot(d2, d2), dot(d3, d3)), 0.0);
-    vec4 n = h * h * h * h * vec4(dot(d0, hash33(i)), dot(d1, hash33(i + i1)), dot(d2, hash33(i + i2)), dot(d3, hash33(i + 1.0)));
-    return dot(vec4(31.316), n);
-  }
-
-  float light1(float intensity, float attenuation, float dist) {
-    return intensity / (1.0 + dist * attenuation);
-  }
-  float light2(float intensity, float attenuation, float dist) {
-    return intensity / (1.0 + dist * dist * attenuation);
-  }
 
   // Leaves everything below the knee untouched; only highlights roll off instead of clipping.
   vec3 shoulder(vec3 x) {
@@ -62,19 +27,17 @@ const skslSource = `
     float invLen = len > 0.0 ? 1.0 / len : 0.0;
 
     float n0 = snoise3(vec3(uv * noiseScale, iTime * noiseSpeed)) * 0.5 + 0.5;
-    
+
     float minRadius = mix(innerRadius, 1.0, 0.5 - (intensity * 0.5));
     float maxRadius = mix(innerRadius, 1.0, 0.5 + (intensity * 0.5));
     float r0 = mix(minRadius, maxRadius, n0);
-    
+
     float d0 = distance(uv, (r0 * invLen) * uv);
     float v0 = light1(1.0, 10.0, d0);
 
     v0 *= smoothstep(r0 * 1.05, r0, len);
     float innerFade = smoothstep(r0 * 0.8, r0 * 0.95, len);
-    v0 *= mix(innerFade, 1.0, 0.3); 
-
-    float cl = cos(ang + iTime * 2.0) * 0.5 + 0.5;
+    v0 *= mix(innerFade, 1.0, 0.3);
 
     // Highlight 1: wanders along the rim, speeding up, stopping and reversing (its angular
     // velocity swings from about -0.8 to +1.3 rad/s), with a slow clockwise drift overall.
@@ -99,9 +62,30 @@ const skslSource = `
     float v2 = smoothstep(1.0, mix(innerRadius, 1.0, n0 * 0.5), len);
     float v3 = smoothstep(innerRadius, mix(innerRadius, 1.0, 0.5), len);
 
-    vec3 colBase = mix(color1, color2, cl);
+    // Living colors: one smooth cosine bump per color around the ring. Each color peaks at
+    // its center and fades to zero exactly opposite it, so where two colors meet only those
+    // two blend (no third-color streaks, no creases). Centers shift so each color's share
+    // breathes around a third. Noise bends the layout locally, so there is no rigid
+    // rotation, only a slow sway.
+    vec2 cdir = uv * invLen;
+    float sway = 0.07 * sin(iTime * 0.11) + 0.04 * sin(iTime * 0.23 + 1.0);
+    // Kept gentle and low-frequency so the layout never folds back on itself (a fold
+    // squeezes a gradient into a hard edge).
+    float warp = 0.06 * snoise3(vec3(cdir * 0.7, iTime * 0.15 + 20.0));
+    float u = (ang / 6.2831853 + sway + warp) * 6.2831853;
+    float wp = iTime * 0.17;
+    float w1 = 0.33333 + 0.0333 * sin(wp);
+    float w2 = 0.33333 + 0.0333 * sin(wp + 2.0944);
+    float c2 = (w1 * 0.5 + w2 * 0.5) * 6.2831853;
+    float c3 = (w1 + w2 * 0.5 + (1.0 - w1 - w2) * 0.5) * 6.2831853;
+    float sharp = mix(1.6, 2.4, 0.5 + 0.5 * sin(iTime * 0.27 + 0.6));
+    // max() guards pow(): rounding can push the base a hair below 0, which is NaN on GPUs.
+    float k1 = pow(max(0.5 + 0.5 * cos(u), 0.0), sharp);
+    float k2 = pow(max(0.5 + 0.5 * cos(u - c2), 0.0), sharp);
+    float k3 = pow(max(0.5 + 0.5 * cos(u - c3), 0.0), sharp);
+    vec3 colBase = (color1 * k1 + color2 * k2 + color3 * k3) / max(k1 + k2 + k3, 0.0001);
+
     vec3 lightCol = (colBase + v1) * mix(1.0, v2 * v3, 0.1);
-    
     lightCol = mix(vec3(0.0), lightCol, v0);
 
     // Outer glow: a soft halo around the rim plus an outward falloff (no interior fill).
@@ -112,7 +96,7 @@ const skslSource = `
     float rimSoft = 1.0 / (1.0 + dr * dr * 83.0);
     float glowOut = dr > 0.0 ? exp(-dr * reach) : 0.0;
     float breathe = 0.85 + 0.15 * sin(iTime * 0.9);
-    float patches = 0.75 + 0.5 * (snoise3(vec3(uv * invLen * 1.3, iTime * 0.25)) * 0.5 + 0.5);
+    float patches = 0.75 + 0.5 * (snoise3(vec3(cdir * 1.3, iTime * 0.25)) * 0.5 + 0.5);
     float glow = (rimSoft * 0.45 + glowOut * 0.18) * 1.1 * breathe * patches * glowIntensity;
     glow *= 1.0 - smoothstep(0.95, 1.2, len);
     lightCol += (colBase + v1 * 0.5) * glow;
@@ -127,4 +111,4 @@ const skslSource = `
   }
 `;
 
-export const orbShader = Skia.RuntimeEffect.Make(skslSource);
+export const orbShader = Skia.RuntimeEffect.Make(source);
