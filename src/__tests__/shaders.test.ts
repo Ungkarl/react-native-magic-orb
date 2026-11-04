@@ -95,7 +95,16 @@ function render(source: string, iTime: number, options?: RenderOptions) {
     }
     return count;
   };
-  return { alpha, total, countNear };
+  /** Counts bright pixels whose green channel beats red and blue combined. */
+  const countGreenDominant = () => {
+    let count = 0;
+    for (let i = 0; i < pixels.length; i += 4) {
+      if (pixels[i + 3]! < 120) continue;
+      if (pixels[i + 1]! > pixels[i]! + pixels[i + 2]!) count++;
+    }
+    return count;
+  };
+  return { alpha, total, countNear, countGreenDominant };
 }
 
 describe.each([
@@ -142,11 +151,13 @@ describe('Orb colorCount', () => {
   });
 
   it('only shows colors 4 and 5 when colorCount includes them', () => {
-    // Sample a few moments so the slow sway cannot hide a color by chance.
+    // Color 4 is pure green. Colors blend widely, so look for green-dominant pixels
+    // (green brighter than red and blue together), which colors 1–3 never produce.
+    // Sample a few moments so moving colors cannot hide one by chance.
     const green = (n: number) =>
       [5, 40, 90].reduce(
         (sum, t) =>
-          sum + render(orbSksl, t, { colorCount: n }).countNear([0, 255, 0]),
+          sum + render(orbSksl, t, { colorCount: n }).countGreenDominant(),
         0
       );
     expect(green(3)).toBe(0);
