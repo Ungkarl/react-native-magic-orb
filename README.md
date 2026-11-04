@@ -34,12 +34,42 @@ This library requires the following peer dependencies to be installed in your pr
 
 - [`@shopify/react-native-skia`](https://shopify.github.io/react-native-skia/) — provides the GPU-accelerated canvas and shader runtime
 - [`react-native-reanimated`](https://docs.swmansion.com/react-native-reanimated/) — drives the per-frame animation loop at 60fps
+- [`react-native-worklets`](https://docs.swmansion.com/react-native-worklets/) — required by Reanimated 4 to run the animation on the UI thread
+
+Tested with Expo SDK 58, React Native 0.88, Skia 2.14, Reanimated 4.7 and Worklets 0.13.
 
 ## 🔧 Installation
 
+### Expo
+
 ```sh
-npm install react-native-magic-orb
+npx expo install react-native-magic-orb @shopify/react-native-skia react-native-reanimated react-native-worklets
 ```
+
+`npx expo install` picks the Skia, Reanimated and Worklets versions that match your Expo SDK. No extra setup is needed: `babel-preset-expo` already configures Reanimated. It works in Expo Go as well as in development builds.
+
+### Bare React Native
+
+```sh
+npm install react-native-magic-orb @shopify/react-native-skia react-native-reanimated react-native-worklets
+```
+
+Add the Worklets Babel plugin to `babel.config.js`. It must be the last plugin:
+
+```js
+module.exports = {
+  presets: ['module:@react-native/babel-preset'],
+  plugins: ['react-native-worklets/plugin'],
+};
+```
+
+Then install the iOS pods and rebuild the app:
+
+```sh
+cd ios && pod install
+```
+
+If you use Reanimated 3, the plugin is `react-native-reanimated/plugin` instead, and you can skip `react-native-worklets`. See the [Reanimated installation guide](https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/getting-started) for details.
 
 ## 🚀 Usage
 
@@ -109,6 +139,14 @@ import { ClassicOrb } from 'react-native-magic-orb';
 | `ocean` | Navy to bright blue — deep water |
 | `nebula` | Near-black indigo to bright purple — outer space |
 | `toxic` | Neon green to acid yellow — radioactive glow |
+| `sunset` | Coral, rose and orange — warm evening sky |
+| `synthwave` | Peach, neon purple and turquoise — retro 80s |
+| `ghost` | Charcoal, grey and white — subtle, monochrome |
+| `forest` | Deep teal to sage and mint — calm, natural |
+| `supernova` | Deep blue, crimson and gold — explosive contrast |
+| `glacier` | Sky blue, mint and ice white — cool and fresh |
+| `bloodMoon` | Near-black to bright red — dark and intense |
+| `gold` | Dark gold to pale champagne — premium, metallic |
 
 
 ## 🛣️ Roadmap
