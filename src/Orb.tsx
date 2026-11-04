@@ -1,6 +1,6 @@
 import { OrbBase } from './OrbBase';
 import type { BaseOrbProps } from './OrbBase';
-import { orbShader } from './shaders/orb';
+import { getOrbShader } from './shaders/orb';
 
 export type { ColorSchemeName } from './colors';
 
@@ -47,7 +47,7 @@ export function Orb({
       intensity={clampTo(intensity, ORB_LIMITS.intensity)}
       noiseScale={clampTo(noiseScale, ORB_LIMITS.noiseScale)}
       innerRadius={clampTo(innerRadius, ORB_LIMITS.innerRadius)}
-      shader={orbShader}
+      shader={getOrbShader()}
       glowIntensity={
         glow ? clampTo(glowIntensity, ORB_LIMITS.glowIntensity)! : 0
       }
