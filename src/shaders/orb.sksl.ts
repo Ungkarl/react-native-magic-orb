@@ -38,10 +38,17 @@ export const orbSksl = `${commonSksl}
     float len = length(uv);
     float invLen = len > 0.0 ? 1.0 / len : 0.0;
 
-    float n0 = snoise3(vec3(uv * noiseScale, iTime * noiseSpeed)) * 0.5 + 0.5;
+    // Shape noise is sampled by direction (on a circle at the ring's average radius), not
+    // per pixel. Every ray from the center then crosses the edge exactly once, so the ring
+    // can't tear, fold over itself or break into fragments at high intensity/noiseScale.
+    // At normal settings this looks the same as sampling at the pixel.
+    float midRadius = mix(innerRadius, 1.0, 0.5);
+    float n0 = snoise3(vec3(uv * invLen * midRadius * noiseScale, iTime * noiseSpeed)) * 0.5 + 0.5;
 
-    float minRadius = mix(innerRadius, 1.0, 0.5 - (intensity * 0.5));
-    float maxRadius = mix(innerRadius, 1.0, 0.5 + (intensity * 0.5));
+    // Above 1 the ring would grow past the canvas edge and below the inner core.
+    float amp = clamp(intensity, 0.0, 1.0);
+    float minRadius = mix(innerRadius, 1.0, 0.5 - (amp * 0.5));
+    float maxRadius = mix(innerRadius, 1.0, 0.5 + (amp * 0.5));
     float r0 = mix(minRadius, maxRadius, n0);
 
     float d0 = distance(uv, (r0 * invLen) * uv);

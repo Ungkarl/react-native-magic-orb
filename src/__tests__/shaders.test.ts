@@ -23,10 +23,19 @@ const SIZE = 160;
 interface RenderOptions {
   glowIntensity?: number;
   colorCount?: number;
+  intensity?: number;
+  noiseScale?: number;
+  innerRadius?: number;
 }
 const suppliedUniforms = (
   iTime: number,
-  { glowIntensity = 0.7, colorCount = 3 }: RenderOptions = {}
+  {
+    glowIntensity = 0.7,
+    colorCount = 3,
+    intensity = 0.4,
+    noiseScale = 0.85,
+    innerRadius = 0.6,
+  }: RenderOptions = {}
 ) => ({
   iTime: [iTime],
   iResolution: [SIZE, SIZE],
@@ -37,9 +46,9 @@ const suppliedUniforms = (
   color4: [0, 1, 0],
   color5: [1, 1, 0],
   colorCount: [colorCount],
-  noiseScale: [0.85],
-  innerRadius: [0.6],
-  intensity: [0.4],
+  noiseScale: [noiseScale],
+  innerRadius: [innerRadius],
+  intensity: [intensity],
   noiseSpeed: [0.5],
   glowIntensity: [glowIntensity],
 });
@@ -104,7 +113,34 @@ function render(source: string, iTime: number, options?: RenderOptions) {
     }
     return count;
   };
-  return { alpha, total, countNear, countGreenDominant };
+  /**
+   * Walks 72 rays from the center to the edge and returns the highest number of
+   * separate bright bands any ray crosses. An intact ring gives 1 on every ray.
+   */
+  const maxBandsPerRay = (high = 110, low = 60) => {
+    let worst = 0;
+    const c = SIZE / 2;
+    for (let a = 0; a < 72; a++) {
+      const angle = (a / 72) * Math.PI * 2;
+      let bands = 0;
+      let inside = false;
+      for (let r = 0; r < c - 1; r++) {
+        const x = Math.round(c + Math.cos(angle) * r);
+        const y = Math.round(c + Math.sin(angle) * r);
+        const value = alpha(x, y);
+        // Two thresholds, so pixel rounding at the ring's edge can't count as a new band.
+        if (!inside && value > high) {
+          bands++;
+          inside = true;
+        } else if (inside && value < low) {
+          inside = false;
+        }
+      }
+      worst = Math.max(worst, bands);
+    }
+    return worst;
+  };
+  return { alpha, total, countNear, countGreenDominant, maxBandsPerRay };
 }
 
 describe.each([
@@ -162,5 +198,24 @@ describe('Orb colorCount', () => {
       );
     expect(green(3)).toBe(0);
     expect(green(5)).toBeGreaterThan(0);
+  });
+});
+
+describe('Orb shape at extreme props', () => {
+  const extremes: [string, RenderOptions][] = [
+    ['high intensity', { intensity: 1.5 }],
+    ['high noiseScale', { noiseScale: 3, intensity: 1 }],
+    ['small innerRadius', { innerRadius: 0.1, noiseScale: 2, intensity: 0.8 }],
+    ['large innerRadius', { innerRadius: 0.95, intensity: 1 }],
+  ];
+
+  it.each(extremes)('stays one intact ring with %s', (_label, options) => {
+    for (const t of [3, 7, 40]) {
+      const { maxBandsPerRay, alpha } = render(orbSksl, t, options);
+      expect(maxBandsPerRay()).toBe(1);
+      // The ring and its glow stay inside the canvas instead of being cut off.
+      expect(alpha(0, 0)).toBeLessThan(10);
+      expect(alpha(SIZE / 2, 0)).toBeLessThan(60);
+    }
   });
 });
