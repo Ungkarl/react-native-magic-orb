@@ -34,11 +34,3 @@ export const COLOR_SCHEMES: Record<ColorSchemeName, [string, string, string]> =
     bloodMoon: ['#3E0000', '#8B0000', '#FF1A1A'],
     gold: ['#A67C00', '#BF953F', '#FCF6BA'],
   };
-
-export const hexToVec3 = (hex: string): [number, number, number] => {
-  const cleanHex = hex.replace('#', '');
-  const r = parseInt(cleanHex.substring(0, 2), 16) / 255;
-  const g = parseInt(cleanHex.substring(2, 4), 16) / 255;
-  const b = parseInt(cleanHex.substring(4, 6), 16) / 255;
-  return [r, g, b];
-};

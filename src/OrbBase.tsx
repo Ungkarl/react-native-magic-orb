@@ -1,18 +1,22 @@
-import { useMemo } from 'react';
 import { View, StyleSheet } from 'react-native';
 import type { ViewStyle } from 'react-native';
 import type { SkRuntimeEffect } from '@shopify/react-native-skia';
-import { COLOR_SCHEMES, hexToVec3 } from './colors';
 import type { ColorSchemeName } from './colors';
+import { resolveColors } from './palette';
+import type { OrbColors } from './palette';
 import { useOrbAnimation } from './useOrbAnimation';
 import { OrbCanvas } from './OrbCanvas';
 
 /** Props shared by every orb component. */
 export interface BaseOrbProps {
-  /** Preset color palette. When set, overrides `colors`. */
+  /** Preset color palette. Takes priority over `colors` and `color`. */
   colorScheme?: ColorSchemeName;
-  /** Three hex colors used to paint the orb. */
-  colors?: [string, string, string];
+  /** 2–5 hex colors used to paint the orb. Takes priority over `color`. */
+  colors?: OrbColors;
+  /** One hex color; a matching palette is generated from it. */
+  color?: string;
+  /** Rotates all colors around the color wheel, in degrees per second. 0 (default) is off. */
+  hueShift?: number;
   /** Width and height in logical pixels. */
   size?: number;
   /** Global time multiplier for all animation. */
@@ -39,7 +43,9 @@ export function OrbBase({
   shader,
   glowIntensity,
   colorScheme,
-  colors = ['#339999', '#194c4c', '#7df7ff'],
+  colors,
+  color,
+  hueShift = 0,
   size = 300,
   speed = 1.0,
   wobbleSpeed = 0.5,
@@ -48,17 +54,6 @@ export function OrbBase({
   innerRadius = 0.6,
   style,
 }: OrbBaseProps) {
-  const activeColors = colorScheme ? COLOR_SCHEMES[colorScheme] : colors;
-
-  const parsedColors = useMemo(
-    () => ({
-      c1: hexToVec3(activeColors[0]),
-      c2: hexToVec3(activeColors[1]),
-      c3: hexToVec3(activeColors[2]),
-    }),
-    [activeColors]
-  );
-
   const uniforms = useOrbAnimation({
     size,
     speed,
@@ -67,7 +62,8 @@ export function OrbBase({
     noiseScale,
     innerRadius,
     glowIntensity,
-    parsedColors,
+    colors: resolveColors({ colorScheme, colors, color }),
+    hueShift,
   });
 
   return (

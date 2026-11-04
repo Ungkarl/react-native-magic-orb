@@ -52,8 +52,15 @@ import { Orb } from 'react-native-magic-orb';
 // With a preset color scheme
 <Orb colorScheme="aurora" size={250} />
 
-// With custom hex colors
+// With custom hex colors (2–5)
 <Orb colors={['#ff0080', '#7928ca', '#0070f3']} size={300} />
+<Orb colors={['#00f5ff', '#2b6cff', '#9d00ff', '#ff00c8', '#ffb800']} />
+
+// From a single color: a matching palette is generated
+<Orb color="#7c3aed" />
+
+// Colors slowly travel around the color wheel (degrees per second)
+<Orb colorScheme="aurora" hueShift={30} />
 
 // Fully configured
 <Orb
@@ -73,7 +80,7 @@ import { Orb } from 'react-native-magic-orb';
 
 | Component | Look |
 |-----------|------|
-| `Orb` | A glowing ring whose three colors melt into each other, with two wandering highlights and an animated outer glow. |
+| `Orb` | A glowing ring whose colors melt into each other, with two wandering highlights and an animated outer glow. |
 | `ClassicOrb` | The original orb from versions before 0.2.0: a two-color ring with a single orbiting highlight. Same props as `Orb`, minus `glow` and `glowIntensity`. |
 
 ```tsx
@@ -82,12 +89,27 @@ import { ClassicOrb } from 'react-native-magic-orb';
 <ClassicOrb colorScheme="aurora" />
 ```
 
+### Palettes from one color
+
+`generatePalette` returns the same palette the `color` prop uses, if you want to reuse it elsewhere in your UI:
+
+```tsx
+import { generatePalette } from 'react-native-magic-orb';
+
+generatePalette('#7c3aed');    // 3 colors, including '#7c3aed'
+generatePalette('#7c3aed', 5); // 2–5 colors
+```
+
+Colors are spread across neighbouring hues with a gentle lightness ramp, calculated in OKLCH so the steps look even to the eye.
+
 ## ⚙️ Props
 
 | Prop | Type | Default | Description |
 |------|------|---------|-------------|
-| `colorScheme` | `ColorSchemeName` | — | Preset color palette. When set, overrides the `colors` prop. |
-| `colors` | `[string, string, string]` | `['#339999', '#194c4c', '#7df7ff']` | Tuple of three hex color strings used to paint the orb surface. `Orb` uses all three; `ClassicOrb` uses the first two. |
+| `colorScheme` | `ColorSchemeName` | — | Preset color palette. Takes priority over `colors` and `color`. |
+| `colors` | `OrbColors` (2–5 hex strings) | `['#339999', '#194c4c', '#7df7ff']` | Hex colors used to paint the orb. `Orb` uses all of them; `ClassicOrb` uses the first two. Takes priority over `color`. |
+| `color` | `string` | — | A single hex color. A matching 3-color palette is generated from it (see `generatePalette`). |
+| `hueShift` | `number` | `0` | Rotates all colors around the color wheel over time, in degrees per second. `0` is off; `30` takes 12 seconds per full cycle. Lightness is kept, so the palette's character stays the same. |
 | `size` | `number` | `300` | Width and height of the orb in logical pixels. |
 | `speed` | `number` | `1.0` | Global time multiplier. Scales the rate of all animations uniformly. |
 | `wobbleSpeed` | `number` | `0.5` | How quickly the surface noise pattern evolves over time. Higher values produce faster, more restless movement. |
@@ -114,11 +136,11 @@ import { ClassicOrb } from 'react-native-magic-orb';
 ## 🛣️ Roadmap
 - [x] Initial release with core animation and customization features
 - [x] Additional preset color schemes
-- [ ] Support for up to 5 colors and down to 2 colors for more variety
-- [ ] Auto Color Generation based on a single input color
-- [ ] Dynamic Color Mode that shifts hues over time
+- [x] Support for up to 5 colors and down to 2 colors for more variety
+- [x] Auto Color Generation based on a single input color
+- [x] Dynamic Color Mode that shifts hues over time
 - [ ] A fix for the shape breaking when some of the props are set to high values
-- [ ] Make color glow / gradient more dynamic than just a animating circle.
+- [x] Make color glow / gradient more dynamic than just a animating circle.
 - [ ] Performance optimizations for lower-end devices
 - [ ] Support for React Native Web
 - [ ] Touch Interaction mode - make the orb react to being tapped (e.g. ripple effect through shader)

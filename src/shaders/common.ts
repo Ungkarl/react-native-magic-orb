@@ -5,6 +5,9 @@ export const commonSksl = `
   uniform vec3 color1;
   uniform vec3 color2;
   uniform vec3 color3;
+  uniform vec3 color4;
+  uniform vec3 color5;
+  uniform float colorCount;
   uniform float noiseScale;
   uniform float innerRadius;
   uniform float intensity;
